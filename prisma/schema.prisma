@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("projects")
+}
+
+model WorkSchedule {
+  id              String            @id @default(uuid())
+  startDate       DateTime @map("start_date")
+  endDate         DateTime @map("end_date")
+  days            Json
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  WorkScheduleDay WorkScheduleDay[] 
+  userId          String @map("user_id")
+  user            User              @relation(fields: [userId], references: [id])
+  workSchedules   User[]            @relation("UserWorkSchedules")
+  
+  @@map("work_schedules")
+}
+
+model WorkScheduleDay {
+  id             String       @id @default(uuid())
+  workScheduleId String @map("work_schedule_id")
+  workSchedule   WorkSchedule @relation(fields: [workScheduleId], references: [id])
+  dayOfWeek      Int @map("day_of_week") // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+  startTime      String @map("start_time") // ISO 8601 format
+  endTime        String @map("end_time") // ISO 8601 format
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@map("work_schedule_days")
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  password String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  workScheduleId String? @map("work_schedule_id")
+  workSchedules WorkSchedule[] @relation("UserWorkSchedules")
+  projectId String? @map("project_id")
+  projects Project[]
+
+  @@map("users")
+  WorkSchedule WorkSchedule[]
+}
