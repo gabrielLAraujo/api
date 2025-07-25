@@ -491,6 +491,34 @@
           "user"
         ]
       }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Auth"
+        ]
+      }
     }
   },
   "info": {
@@ -515,6 +543,10 @@
     {
       "name": "user",
       "description": "Operações relacionadas aos usuários"
+    },
+    {
+      "name": "auth",
+      "description": "Operações de autenticação e autorização"
     }
   ],
   "servers": [],

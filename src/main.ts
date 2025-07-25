@@ -14,11 +14,11 @@ async function bootstrap() {
     .addTag('work-schedule-day', 'Operações relacionadas aos dias da agenda')
     .addTag('forecast', 'Operações relacionadas às previsões mensais')
     .addTag('user', 'Operações relacionadas aos usuários')
+    .addTag('auth', 'Operações de autenticação e autorização')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
-  // Gera o arquivo swagger.json na raiz do projeto
   writeFileSync('./swagger.json', JSON.stringify(document, null, 2));
 
   SwaggerModule.setup('/', app, document);

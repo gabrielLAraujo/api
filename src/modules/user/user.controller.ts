@@ -15,7 +15,7 @@ export class UserController {
         description: 'User created successfully',
         type: User,
     })
-    create(@Body() createUserDto: CreateUserDto): User {
+    async create(@Body() createUserDto: CreateUserDto): Promise<User> {
         return this.userService.create(createUserDto);
     }
     get(@Body() id: string): User | undefined {
