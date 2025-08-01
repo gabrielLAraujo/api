@@ -21,19 +21,22 @@ export class ForecastService {
     private readonly workScheduleDayService: WorkScheduleDayService,
   ) {}
 
-  generateForecast(generateForecastDto: GenerateForecastDto): Forecast {
+  async generateForecast(generateForecastDto: GenerateForecastDto, projectId?: string, hourlyRate?: number): Promise<Forecast> {
     const { workScheduleId, month, year, includeHolidays = false } = generateForecastDto;
 
     const workSchedule = this.workScheduleService.findOne(workScheduleId);
     if (!workSchedule) {
-      throw new Error(`Agenda de trabalho com ID ${workScheduleId} não encontrada`);
+      throw new Error(`Work schedule with ID ${workScheduleId} not found`);
     }
 
     const workScheduleDays = this.workScheduleDayService.findByWorkScheduleId(workScheduleId);
 
-    const workDays = this.generateMonthDays(year, month, workSchedule, workScheduleDays, includeHolidays);
+    // Use provided hourly rate or default to 65
+    const ratePerHour = hourlyRate || 65;
 
-    // Calcular totais
+    const workDays = this.generateMonthDays(year, month, workSchedule, workScheduleDays, includeHolidays, ratePerHour);
+
+    // Calculate totals
     const totalWorkDays = workDays.filter(day => day.isWorkDay && !day.isHoliday).length;
     const totalWorkHours = workDays
       .filter(day => day.isWorkDay && !day.isHoliday)
@@ -49,7 +52,9 @@ export class ForecastService {
       workDays,
       createdAt: new Date(),
       updatedAt: new Date(),
-      monthlyGains: 65 * totalWorkHours,
+      monthlyGains: ratePerHour * totalWorkHours,
+      projectId,
+      hourlyRate: ratePerHour,
     };
 
     this.forecasts.push(forecast);
@@ -62,6 +67,7 @@ export class ForecastService {
     workSchedule: WorkSchedule,
     workScheduleDays: WorkScheduleDay[],
     includeHolidays: boolean,
+    hourlyRate: number,
   ): WorkDayForecast[] {
     const days: WorkDayForecast[] = [];
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -106,7 +112,7 @@ export class ForecastService {
         workHours: workHours,
         isHoliday,
         holidayName: undefined,
-        dailyGains: 65 * workHours,
+        dailyGains: hourlyRate * workHours,
       };
 
       days.push(workDay);
@@ -139,4 +145,4 @@ export class ForecastService {
   private generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }
-} 
+}

@@ -5,25 +5,35 @@ import { writeFileSync } from 'fs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  
+  // Enable CORS for frontend communication
+  app.enableCors({
+    origin: 'http://localhost:3003',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
 
   const config = new DocumentBuilder()
     .setTitle('Work Schedule API')
     .setDescription('API para gerenciamento de agendas de trabalho')
     .setVersion('1.0')
-    .addTag('work-schedule', 'Operações relacionadas às agendas de trabalho')
-    .addTag('work-schedule-day', 'Operações relacionadas aos dias da agenda')
-    .addTag('forecast', 'Operações relacionadas às previsões mensais')
-    .addTag('user', 'Operações relacionadas aos usuários')
-    .addTag('auth', 'Operações de autenticação e autorização')
+    .addTag('Work Schedule', 'Operações relacionadas às agendas de trabalho')
+    .addTag('Work Schedule Day', 'Operações relacionadas aos dias da agenda')
+    .addTag('Forecast', 'Operações relacionadas às previsões mensais')
+    .addTag('User', 'Operações relacionadas aos usuários')
+    .addTag('Auth', 'Operações de autenticação e autorização')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
 
   writeFileSync('./swagger.json', JSON.stringify(document, null, 2));
 
-  SwaggerModule.setup('/', app, document);
+  SwaggerModule.setup('/api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
+  console.log(`Swagger documentation available at: http://localhost:${port}/api`);
 }
 
 void bootstrap();

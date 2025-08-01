@@ -4,7 +4,7 @@ import { ForecastService } from './forecast.service';
 import { GenerateForecastDto } from './dto/generate-forecast.dto';
 import { Forecast } from './entities/forecast.entity';
 
-@ApiTags('forecast')
+@ApiTags('Forecast')
 @Controller('forecast')
 export class ForecastController {
   constructor(private readonly forecastService: ForecastService) {}

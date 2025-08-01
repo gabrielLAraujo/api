@@ -12,7 +12,11 @@ export class UserRepository {
     return this.prisma.user.create({ data });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.user.findMany();
   }
+  async findFirst(where: Prisma.UserWhereInput) {
+    return this.prisma.user.findFirst({ where });
+  }
+  
 }

@@ -9,6 +9,8 @@ export class Forecast {
   createdAt: Date;
   updatedAt: Date;
   monthlyGains: number;
+  projectId?: string;
+  hourlyRate?: number;
 }
 
 export class WorkDayForecast {

@@ -13,7 +13,7 @@ import { CreateWorkScheduleDto } from './dto/create-work-schedule.dto';
 import { UpdateWorkScheduleDto } from './dto/update-work-schedule.dto';
 import { WorkSchedule } from './entities/work-schedule.entity';
 
-@ApiTags('work-schedule')
+@ApiTags('Work Schedule')
 @Controller('work-schedule')
 export class WorkScheduleController {
   constructor(private readonly workScheduleService: WorkScheduleService) {}

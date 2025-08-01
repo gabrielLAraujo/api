@@ -12,16 +12,27 @@ export class UserService {
         return uuidv4();
     }
     async create(createUserDto: CreateUserDto): Promise<User> {
-        const { name, email, password } = createUserDto;
+        const { name, email, password, provider, providerId, avatar } = createUserDto;
          try {
     console.log('Tentando criar usuário...');
     const result = await this.userRepository.create({
       name: name,
       email: email,
       password: password,
+      provider: provider,
+      providerId: providerId,
+      avatar: avatar,
     });
     console.log('Usuário criado com sucesso:', result);
-    return result;
+    return new User(
+      result.id,
+      result.name,
+      result.email,
+      result.password,
+      result.provider || undefined,
+      result.providerId || undefined,
+      result.avatar || undefined
+    );
   } catch (err) {
     console.error('Erro ao criar usuário:', err);
     throw err; // não engole o erro
@@ -35,9 +46,34 @@ export class UserService {
             throw new Error('User not found');
         }
     }
-    findByEmail(email: string): User | null {
-        const user = this.users.find((user) => user.email === email);
-        return user || null;
+    async findByEmail(email: string): Promise<User | null> {
+       const user = await this.userRepository.findFirst({ email });
+       if (!user) return null;
+       
+       return new User(
+         user.id,
+         user.name,
+         user.email,
+         user.password,
+         user.provider || undefined,
+         user.providerId || undefined,
+         user.avatar || undefined
+       );
+    }
+    
+    async findById(id: string): Promise<User | null> {
+       const user = await this.userRepository.findFirst({ id });
+       if (!user) return null;
+       
+       return new User(
+         user.id,
+         user.name,
+         user.email,
+         user.password,
+         user.provider || undefined,
+         user.providerId || undefined,
+         user.avatar || undefined
+       );
     }
     findAll(): User[] {
         return this.users; 
